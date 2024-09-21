@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Ticker;
+use App\Models\ExchangeDetail;
 
 class TickerController extends Controller
 {
@@ -17,6 +18,12 @@ class TickerController extends Controller
 
     public function store(Request $request)
     {
+        $exchangeDetail = ExchangeDetail::find($request->exchange_detail_id);
+
+        if (!$exchangeDetail) {
+            return response()->json(['message' => 'Exchange Detail not found', 'success' => false], 404);
+        }
+
         $validateData = $request->validate([
             'exchange_detail_id' => 'required|string|max:255',
             'base' => 'required|string|max:255',
@@ -25,14 +32,15 @@ class TickerController extends Controller
             'volume' => 'required|numeric',
             'trust_score' => 'required|string',
             'bid_ask_spread_percentage' => 'required|numeric',
-            'last_traded_at' => 'required|timestamp',
-            'last_fetch_at' => 'required|timestamp',
+            'last_traded_at' => 'required|date',
+            'last_fetch_at' => 'required|date',
             'is_anomaly' => 'required|boolean',
             'is_stale' => 'required|boolean',
             'trade_url' => 'required|url',
             'coin_id' => 'required|string',
             'target_coin_id' => 'required|string',
         ]);
+
 
         $ticker = Ticker::create($validateData);
 
@@ -56,11 +64,17 @@ class TickerController extends Controller
     public function update(Request $request, string $id)
     {
         $ticker = Ticker::find($id);
-
+        
         if (!$ticker) {
             return response()->json(['message' => 'Ticker not found', 'success' => false], 404);
         }
 
+        $exchangeDetail = ExchangeDetail::find($request->exchange_detail_id);
+
+        if (!$exchangeDetail) {
+            return response()->json(['message' => 'Exchange Detail not found', 'success' => false], 404);
+        }
+        
         $validateData = $request->validate([
             'exchange_detail_id' => 'required|string|max:255',
             'base' => 'required|string|max:255',
