@@ -9,13 +9,14 @@ class ExchangeDetail extends Model
 {
     use HasFactory;
 
+    protected $table = 'exchange_details';
     protected $primaryKey = 'exchange_id';
     protected $keyType = 'string';
     public $incrementing = false;
 
 
      protected $fillable = [
-        'exchange_id', // ID dari API
+        'exchange_id', 
         'name',
         'year_established',
         'country',

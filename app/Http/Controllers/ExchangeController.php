@@ -2,12 +2,13 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
 use App\Models\Exchange;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
 
 class ExchangeController extends Controller
 {
-    public static function index () 
+    public static function index()
     {
         $exchanges = Exchange::all();
 
@@ -16,7 +17,17 @@ class ExchangeController extends Controller
 
     public function store(Request $request)
     {
-        $validateData = $request->validate([
+
+        $messages = [
+            'required' => 'The :attribute field is required.',
+            'string' => 'The :attribute field must be a string.',
+            'integer' => 'The :attribute field must be an integer.',
+            'url' => 'The :attribute field must be a valid URL.',
+            'numeric' => 'The :attribute field must be a number.',
+            'max' => 'The :attribute field must not exceed :max characters.',
+        ];
+
+        $validateData = Validator::make($request->all(), [
             'name' => 'required|string|max:255',
             'year_established' => 'required|integer',
             'country' => 'required|string|max:255',
@@ -26,7 +37,14 @@ class ExchangeController extends Controller
             'trust_score' => 'required|integer',
             'trust_score_rank' => 'required|integer',
             'trade_volume_24h_btc' => 'required|numeric',
-        ]);
+        ], $messages);
+
+        if ($validateData->fails()) {
+            return response()->json([
+                'message' => $validateData->errors(),
+                'success' => false,
+            ], 400);
+        }
 
         $exchange = Exchange::create($validateData);
 
@@ -43,7 +61,6 @@ class ExchangeController extends Controller
 
         return response()->json(['data' => $exchange, 'success' => true], 200);
     }
-
 
     public function update(Request $request, string $id)
     {
@@ -70,16 +87,16 @@ class ExchangeController extends Controller
         return response()->json([
             'data' => $exchange,
             'success' => true,
-            'message' => 'Exchange updated successfully'
+            'message' => 'Exchange updated successfully',
         ]);
+
     }
 
-    public function destroy (string $id)
+    public function destroy(string $id)
     {
         $exchange = Exchange::find($id);
 
-        if (!$exchange)
-        {
+        if (!$exchange) {
             return response()->json(['message' => 'Exchange not found', 'success' => false], 404);
         }
 

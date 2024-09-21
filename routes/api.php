@@ -14,17 +14,18 @@ use App\Http\Controllers\TickerController;
 //     Route::delete('/items/{id}', [ItemController::class, 'destroy']);
 // });
 
-Route::middleware('api')->group(function () {
+
+// Route::middleware('api')->group(function () {
     Route::resource('/exchanges', ExchangeController::class);
-});
+// });
 
-Route::middleware('api')->group(function () {
+// Route::middleware('api')->group(function () {
     Route::resource('/exchanges/{id}/exchange-details', ExchangeDetailController::class);
-});
+// });
 
-Route::middleware('api')->group(function () {
+// Route::middleware('api')->group(function () {
     Route::resource('/exchange-tickers', TickerController::class);
-});
+// });
 
 // Route::middleware('api')->prefix('/exchange-details')->group(function () {
 //     Route::get('/', [ExchangeDetailController::class, 'index']);
