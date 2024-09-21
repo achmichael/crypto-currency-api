@@ -27,11 +27,12 @@ return new class extends Migration
             $table->string('trade_url')->nullable();
             $table->string('coin_id')->nullable();
             $table->string('target_coin_id')->nullable();
+            $table->timestamps();
     
             $table->foreign('exchange_detail_id')
             ->references('exchange_id')->on('exchange_details')
-            ->onDelete('cascade');
-            $table->timestamps();
+            ->onDelete('cascade')
+            ->onUpdate('cascade');
         });
     }
 

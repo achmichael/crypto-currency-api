@@ -69,12 +69,18 @@ class TickerController extends Controller
             return response()->json(['message' => 'Ticker not found', 'success' => false], 404);
         }
 
+        $tickerBase = Ticker::where('base', $request->base)->where('target', $request->target)->first();
+
+        if (!$tickerBase) {
+            return response()->json(['message' => 'Ticker already exists', 'success' => false], 409);
+        }
+
         $exchangeDetail = ExchangeDetail::find($request->exchange_detail_id);
 
         if (!$exchangeDetail) {
             return response()->json(['message' => 'Exchange Detail not found', 'success' => false], 404);
         }
-        
+
         $validateData = $request->validate([
             'exchange_detail_id' => 'required|string|max:255',
             'base' => 'required|string|max:255',
@@ -83,8 +89,8 @@ class TickerController extends Controller
             'volume' => 'required|numeric',
             'trust_score' => 'required|string',
             'bid_ask_spread_percentage' => 'required|numeric',
-            'last_traded_at' => 'required|timestamp',
-            'last_fetch_at' => 'required|timestamp',
+            'last_traded_at' => 'required|date',
+            'last_fetch_at' => 'required|date',
             'is_anomaly' => 'required|boolean',
             'is_stale' => 'required|boolean',
             'trade_url' => 'required|url',
@@ -106,6 +112,8 @@ class TickerController extends Controller
         }
 
         $ticker->delete();
+
+        return response()->json(['message' => 'Ticker deleted successfully', 'success' => true]);
     }
 
 }

@@ -17,8 +17,15 @@ class ExchangeDetailController extends Controller
         return response()->json(['data' => $exchanges, 'success' => true]);
     }
 
-    public function store(Request $request)
+    public function store(Request $request, string $id)
     {
+        // mencari Exchage detail berdasarkan id
+        $exchange = ExchangeDetail::find($id);
+
+        if ($exchange){
+            return response()->json(['message' => 'Exchange already exists', 'success' => false], 400);
+        }
+
         $rules = [
             'exchange_id' => 'required|string|max:255',
             'name' => 'required|string|max:255',
@@ -77,14 +84,13 @@ class ExchangeDetailController extends Controller
             'trade_volume_24h_btc_normalized.required' => 'Trade volume 24h BTC Normalized wajib diisi.',
             'trade_volume_24h_btc_normalized.numeric' => 'Trade volume 24h BTC Normalized harus berupa angka.',
         ];
-
         $validator = Validator::make($request->all(), $rules, $messages);
-
+        
         if ($validator->fails()) {
             // Jika validasi gagal, kembalikan pesan kesalahan
             return redirect()->back()
-                ->withErrors($validator)
-                ->withInput();
+            ->withErrors($validator)
+            ->withInput();
         }
         
         $exchange = ExchangeDetail::create($request->all());
@@ -103,9 +109,10 @@ class ExchangeDetailController extends Controller
         return response()->json(['data' => $exchange, 'success' => true], 200);
     }
 
-    public function update(Request $request, string $id)
+    public function update(Request $request, string $id, string $name)
     {
-        $exchange = ExchangeDetail::find($id);
+        // Mencari exchange berdasarkan id dan name
+        $exchange = ExchangeDetail::where('exchange_id', $id)->where('name', $name)->first();
 
         if (!$exchange) {
             return response()->json(['message' => 'Exchange not found', 'success' => false], 404);
@@ -181,7 +188,7 @@ class ExchangeDetailController extends Controller
                 ->withInput();
         }
 
-        $exchange->update($validateData);
+        $exchange->update($request->all());
 
         return response()->json(['data' => $exchange, 'success' => true], 200);
     }

@@ -35,6 +35,11 @@ return new class extends Migration
         $table->decimal('trade_volume_24h_btc', 18, 8)->nullable();
         $table->decimal('trade_volume_24h_btc_normalized', 18, 8)->nullable();
         $table->timestamps();
+
+        $table->foreign('exchange_id')
+            ->references('id')->on('exchanges')
+            ->onDelete('cascade')
+            ->onUpdate('cascade');
     });
 }
 

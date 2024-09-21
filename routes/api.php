@@ -14,7 +14,6 @@ use App\Http\Controllers\TickerController;
 //     Route::delete('/items/{id}', [ItemController::class, 'destroy']);
 // });
 
-
 // Route::middleware('api')->group(function () {
     Route::resource('/exchanges', ExchangeController::class);
 // });
